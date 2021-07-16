@@ -530,6 +530,10 @@ use {{invokerPackage}}\ObjectSerializer;
         {{/pathParams}}
 
         {{#formParams}}
+        {{#isFile}}
+        // aurigmafix 5
+        $multipart = true;
+        {{/isFile}}
         // form params
         if (${{paramName}} !== null) {
             {{#isFile}}
@@ -578,6 +582,14 @@ use {{invokerPackage}}\ObjectSerializer;
                 foreach ($formParams as $formParamName => $formParamValue) {
                     $formParamValueItems = is_array($formParamValue) ? $formParamValue : [$formParamValue];
                     foreach ($formParamValueItems as $formParamValueItem) {
+                        // aurigmafix 6
+                        if (gettype($formParamValueItem) === 'object') {
+                            if (!($formParamValueItem instanceof StreamInterface 
+                            || $formParamValueItem instanceof \Iterator 
+                            || method_exists($formParamValueItem, '__toString'))) {
+                                $formParamValueItem = json_encode($formParamValueItem);
+                            }
+                        } 
                         $multipartContents[] = [
                             'name' => $formParamName,
                             'contents' => $formParamValueItem
@@ -620,7 +632,8 @@ use {{invokerPackage}}\ObjectSerializer;
         {{/isBasic}}
         {{#isOAuth}}
         // this endpoint requires OAuth (access token)
-        if ($this->config->getAccessToken() !== null) {
+        // aurigmafix 3
+        if ($this->config->getAccessToken() !== null && ctype_space($this->config->getAccessToken())) {
             $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
         {{/isOAuth}}

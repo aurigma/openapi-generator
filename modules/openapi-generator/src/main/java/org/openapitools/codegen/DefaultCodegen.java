@@ -6012,8 +6012,11 @@ public class DefaultCodegen implements CodegenConfig {
                     }
 
                 } else if (ModelUtils.isMapSchema(s)) {
-                    LOGGER.error("Map of form parameters not supported. Please report the issue to https://github.com/openapitools/openapi-generator if you need help.");
-                    continue;
+                    // aurigmafix 4
+                    // LOGGER.error("Map of form parameters not supported. Please report the issue to https://github.com/openapitools/openapi-generator if you need help.");
+                    // continue;
+                    LOGGER.warn("Map of form parameters not supported. Type was changed to object.");
+                    codegenParameter = fromFormProperty(entry.getKey(), new Schema(), imports);
                 } else {
                     codegenParameter = fromFormProperty(entry.getKey(), entry.getValue(), imports);
                 }
