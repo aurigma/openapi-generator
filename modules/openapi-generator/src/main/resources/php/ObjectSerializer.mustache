@@ -323,7 +323,21 @@ class ObjectSerializer
         /** @psalm-suppress ParadoxicalCondition */
         if (in_array($class, [{{&primitives}}], true)) {
             // aurigmafix 1
-            $class = $class === 'mixed' ? 'object' : $class;
+            if ($class === 'mixed') {
+                if (is_string($data)) {
+                    $class = 'string';
+                } elseif (is_int($data)) {
+                    $class = 'int';
+                } elseif (is_float($data)) {
+                    $class = 'float';
+                } elseif (is_bool($data)) {
+                    $class = 'bool';
+                } elseif (is_array($data)) {
+                    $class = 'array';
+                } else {
+                    $class = 'object';
+                } 
+            }
             settype($data, $class);
             return $data;
         }
