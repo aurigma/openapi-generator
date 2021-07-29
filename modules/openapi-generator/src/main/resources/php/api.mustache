@@ -633,7 +633,8 @@ use {{invokerPackage}}\ObjectSerializer;
         {{#isOAuth}}
         // this endpoint requires OAuth (access token)
         // aurigmafix 3
-        if ($this->config->getAccessToken() !== null && !ctype_space($this->config->getAccessToken())) {
+        $token = $this->config->getAccessToken();
+        if ($token !== null && $token !== '' && !ctype_space($token)) {
             $headers['Authorization'] = 'Bearer ' . $this->config->getAccessToken();
         }
         {{/isOAuth}}
